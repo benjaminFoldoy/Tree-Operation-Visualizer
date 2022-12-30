@@ -1,6 +1,4 @@
 from PIL import Image, ImageDraw, ImageFont
-import random as r
-
 
 ###################################################################
 #                   CLASS: TREE IMAGE
@@ -13,7 +11,6 @@ import random as r
 #
 #   To 
 ###################################################################
-
 class TreeImage:
   def __init__(self, root, color = (255, 255, 255), backgroundColor = (40, 36, 35)):
     ###################################################################
@@ -34,7 +31,6 @@ class TreeImage:
     #         outline color and the color that connects each node
     #
     ###################################################################
-
     self.color = color                       #rgb format: (int, int, int)
     self.backgroundColor = backgroundColor   #rgb format: (int, int, int)
     
@@ -46,7 +42,6 @@ class TreeImage:
     #   self.root is an object of the class Node.
     #
     ###################################################################
-    
     self.root = root                         #root of tree
     
     ###################################################################
@@ -65,6 +60,19 @@ class TreeImage:
     #       - Format: (width, height) where width and height 
     #         are both of type int.
     #       - The width and height of each cell in pixles.
+    #
+    #     self.eP:
+    #       - Of type int
+    #       - Not all cells are used. This number represents 
+    #         the exess amount of pixles that are not needed 
+    #         on the left side of the tree.
+    #       - Example:
+    #         In this tree, the root does not have any left child. 
+    #         We don't want to draw this as blank space, 
+    #         so we remove it.
+    #         ---O---       O---
+    #         -----O-  -->  --O-
+    #         ----O-O       -O-O
     #
     #     self.graphSize:
     #       - Format: (width, height) where width and height 
@@ -85,17 +93,24 @@ class TreeImage:
     #       - An object that uses self.img and draws on it.
     #
     ###################################################################
-    
-    self.cellSize = (100, 200)               #tree is devided into 
+    self.cellSize = (50, 100)                           #set width and height of cells
+    self.eP = self.nLeftExessCells() * self.cellSize[0] #exess pixles that is not needed to be drawn
     self.graphSize = (
       self.cellSize[0] * (self.getGridSize(root)[0]),
       self.cellSize[1] * (self.getGridSize(root)[1])
       )
-    self.margin = self.cellSize[1] * 1
+    self.margin = (
+      self.cellSize[0] * 1, 
+      self.cellSize[1] * 1
+    )
     self.img = Image.new(
       "RGB",
-      (self.graphSize[0] + self.margin*2, self.graphSize[1] + self.margin*2),
-      backgroundColor)
+      (
+        self.graphSize[0] + self.margin[0]*2  - self.nTotalExessCells()*self.cellSize[0], 
+        self.graphSize[1] + self.margin[1]*2
+      ),
+      backgroundColor
+    )
     self.imgDraw = ImageDraw.Draw(self.img)
   
   ###################################################################
@@ -109,7 +124,6 @@ class TreeImage:
   #   If no name is supplied, will be called untitled.png.
   #
   ###################################################################
-
   def save(self, name = "untitled"):
     self.drawEdges()
     self.drawAllNodes()
@@ -150,15 +164,17 @@ class TreeImage:
   #         center of the image.
   #
   ###################################################################
-  
   def drawEdges(self, node = None, start_crd = None):
     if node == None:
       node = self.root
     if start_crd == None:
-      start_crd = (self.graphSize[0]/2 + self.margin, self.margin)
+      start_crd = (
+        self.graphSize[0]/2 + self.margin[0] - self.eP, 
+        self.margin[1]
+      )
     
     if node.leftChild is not None: #ABS: if node has left child.
-      newCrd = ( #tthe endpoint of the line to be drawn.
+      newCrd = ( #the endpoint of the line to be drawn.
         start_crd[0] - self.graphSize[0]/(2**(node.getDepth() + 2)),
         start_crd[1] + self.cellSize[1]
         )
@@ -204,12 +220,14 @@ class TreeImage:
   #
   #   
   ###################################################################
-  
   def drawAllNodes(self, node = None, crd = None):
     if node == None:
       node = self.root
     if crd == None:
-      crd = (self.graphSize[0]/2 + self.margin, self.margin)
+      crd = (
+        self.graphSize[0]/2 + self.margin[0] - self.eP, 
+        self.margin[1]
+      )
     
     #draws node with it's value at it's crd.
     self.drawNode(node.value, crd)
@@ -242,7 +260,6 @@ class TreeImage:
   #   in the center of circle.
   #
   ###################################################################
-
   def drawNode(self, value, crd):
     offset = self.cellSize[0]*1.4 / 2 #crd - offset  = center of circle on crd
     
@@ -285,7 +302,6 @@ class TreeImage:
   #   nodes in the tree if it was full.
   #
   ###################################################################
-  
   def getGridSize(self, node):
     height = node.getHeight()
     width = self.n_horizontal_cells(height)
@@ -294,12 +310,93 @@ class TreeImage:
   ###################################################################
   #                 NUMBER OF HORIZONTAL CELLS
   ###################################################################
-  
   def n_horizontal_cells(self, n):
-    if n <= 0:
+    if n < 0:
+      return 0
+    if n == 0:
       return 1
     return self.n_horizontal_cells(n-1)*2 + 1
+  
+  ###################################################################
+  #                 GET MINIMUM GRID SIZE
+  #
+  #   Gets the minimum number of horizontal cells 
+  #   needed to frame the whole tree
+  #
+  ###################################################################
+  def getMinGridSize(self):
+    return self.nLeftCells() + 1 + self.nRightCells()
 
+  ###################################################################
+  #                 GET NUMBER OF LEFT/RIGHT CELLS
+  #
+  #   Gets the minimum number of horizontal cells 
+  #   needed to frame the left or the right side of the tree
+  #
+  ###################################################################
+  def nLeftCells(self):
+    dummyNode = self.root
+    nLeftCells = 0
+    
+    while dummyNode != None:
+      nLeftCells = 2*nLeftCells + 1
+      dummyNode = dummyNode.leftChild
+
+    return nLeftCells
+  
+  def nRightCells(self):
+    dummyNode = self.root
+    nRightCells = 0
+    
+    while dummyNode != None:
+      nRightCells = 2*nRightCells + 1
+      dummyNode = dummyNode.rightChild
+
+    return nRightCells
+  
+  ###################################################################
+  #                 GET NUMBER OF LEFT/RIGHT TURNS
+  #
+  #   The number of times you can go to a left or right 
+  #   child from the root node.
+  #
+  ###################################################################
+  def nLeftTurns(self):
+    dummyNode = self.root
+    nLeftCells = 0
+    
+    while dummyNode.leftChild != None:
+      nLeftCells += 1
+      dummyNode = dummyNode.leftChild
+
+    return nLeftCells
+  
+  def nRightTurns(self):
+    dummyNode = self.root
+    nRightCells = 0
+    
+    while dummyNode.rightChild != None:
+      nRightCells += 1
+      dummyNode = dummyNode.rightChild
+
+    return nRightCells
+  
+  
+  ###################################################################
+  #                 GET NUMBER OF LEFT/RIGHT CELLS
+  #
+  #   Gets the minimum number of horizontal cells 
+  #   needed to frame the left or the right side of the tree
+  #
+  ###################################################################
+  def nLeftExessCells(self):  #exess cells on left side of root
+    return self.n_horizontal_cells(self.root.getHeight() - 1 - self.nLeftTurns())
+  
+  def nRightExessCells(self): #exess cells on right side of root
+    return self.n_horizontal_cells(self.root.getHeight() - 1 - self.nRightTurns())
+  
+  def nTotalExessCells(self): #total amount of exess cells
+    return self.nLeftExessCells() + self.nRightExessCells()
 
 ###################################################################
 #                         CLASS: NODE
@@ -308,7 +405,6 @@ class TreeImage:
 #   and two possible children (also of class Node)
 #
 ###################################################################
-
 class Node:
   
   def __init__(self, value):
@@ -330,7 +426,6 @@ class Node:
   #   Man it's terrible...
   #
   ###################################################################
-  
   def printTree(self):
     print("-"*self.getDepth() + str(self))
     if self.leftChild:
@@ -345,7 +440,6 @@ class Node:
   #   Also sets that childs parent to self.
   #
   ###################################################################
-  
   def setLeftChild(self, node):
     self.leftChild = node
     self.leftChild.parent = self
@@ -401,13 +495,15 @@ if __name__ == "__main__":
   node.leftChild.setRightChild(Node(69))
   node.leftChild.leftChild.setRightChild(Node(4))
   node.leftChild.leftChild.setLeftChild(Node(7))
+  node.rightChild.setRightChild(Node(8))
+  #node.rightChild.rightChild.setRightChild(Node(23))
+  #node.rightChild.rightChild.rightChild.setRightChild(Node(89))
   node.leftChild.leftChild.leftChild.setLeftChild(Node(29))
   node.leftChild.leftChild.rightChild.setRightChild(Node(55))
   node.leftChild.rightChild.setRightChild(Node(35))
   node.leftChild.rightChild.rightChild.setRightChild(Node(15))
-  node.leftChild.rightChild.rightChild.rightChild.setRightChild(Node(53))
-  
-  node.printTree()
+  node.leftChild.leftChild.leftChild.setRightChild(Node(53))
+  node.leftChild.leftChild.rightChild.setLeftChild(Node(233))
   
   ti = TreeImage(node)
   ti.show()
