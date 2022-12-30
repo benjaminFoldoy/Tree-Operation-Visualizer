@@ -93,7 +93,7 @@ class TreeImage:
     #       - An object that uses self.img and draws on it.
     #
     ###################################################################
-    self.cellSize = (50, 100)                           #set width and height of cells
+    self.cellSize = (100, 200)                           #set width and height of cells
     self.eP = self.nLeftExessCells() * self.cellSize[0] #exess pixles that is not needed to be drawn
     self.graphSize = (
       self.cellSize[0] * (self.getGridSize(root)[0]),
