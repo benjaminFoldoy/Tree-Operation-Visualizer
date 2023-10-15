@@ -3,21 +3,22 @@
 
 ## Usage
 
-`h              -   help`<br>
-`*INTEGER*      -   insert integer into the tree`<br>
-`show           -   shows the current tree`<br>
-`save *FILENAME*-   saves an image of the tree. `<br>
+h                   -   help<br>
+`*INTEGER*`         -   insert integer into the tree<br>
+show                -   shows the current tree<br>
+save `*FILENAME*`   -   saves an image of the tree.<br>
 
 ## Examples
 ### Three nodes
+![small_tree](output_images/three_nodes.png)
 >   42<br>
 >   64<br>
 >   32<br>
 >   save three_nodes<br>
 Output image: <br>
-![small_tree](output_images/three_nodes.png)
 
 ### Many nodes
+![large tree](output_images/many_nodes.png)
 >   42<br>
 >   64<br>
 >   32<br>
@@ -40,4 +41,3 @@ Output image: <br>
 >   108<br>
 >   save many_nodes <br>
 Output image: <br>
-![large tree](output_images/many_nodes.png)
