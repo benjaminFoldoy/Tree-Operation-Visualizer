@@ -10,34 +10,34 @@
 
 ## Examples
 ### Three nodes
->   42
->   64
->   32
->   save three_nodes
+>   42<br>
+>   64<br>
+>   32<br>
+>   save three_nodes<br>
 Output image: <br>
-![small_maze](output_images/three_nodes.png)
+![small_tree](output_images/three_nodes.png)
 
 ### Many nodes
->   42
->   64
->   32
->   16
->   8
->   4
->   12
->   56
->   58
->   54
->   38
->   37
->   22
->   18
->   24
->   39
->   40
->   96
->   81
->   108
->   save many_nodes
+>   42<br>
+>   64<br>
+>   32<br>
+>   16<br>
+>   8<br>
+>   4<br>
+>   12<br>
+>   56<br>
+>   58<br>
+>   54<br>
+>   38<br>
+>   37<br>
+>   22<br>
+>   18<br>
+>   24<br>
+>   39<br>
+>   40<br>
+>   96<br>
+>   81<br>
+>   108<br>
+>   save many_nodes <br>
 Output image: <br>
-![rectangle_maze](output_images/many_nodes.png)
+![large tree](output_images/many_nodes.png)
