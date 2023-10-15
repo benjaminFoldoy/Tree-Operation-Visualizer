@@ -15,7 +15,6 @@ save `*FILENAME*`   -   saves an image of the tree.<br>
 >   64<br>
 >   32<br>
 >   save three_nodes<br>
-Output image: <br>
 
 ### Many nodes
 ![large tree](output_images/many_nodes.png)
@@ -40,4 +39,3 @@ Output image: <br>
 >   81<br>
 >   108<br>
 >   save many_nodes <br>
-Output image: <br>
