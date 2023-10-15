@@ -1,4 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
+from node import Node
 
 ###################################################################
 #                   CLASS: TREE IMAGE
@@ -118,7 +119,7 @@ class TreeImage:
   #
   #   Function to construct- and save image of tree. 
   #
-  #   Will be saved in the Assets/Images folder as *NAME*.png
+  #   Will be saved in the assets/Images folder as *NAME*.png
   #   where name is an argument.
   #
   #   If no name is supplied, will be called untitled.png.
@@ -127,7 +128,7 @@ class TreeImage:
   def save(self, name = "untitled"):
     self.drawEdges()
     self.drawAllNodes()
-    self.img.save(f"Assets/Images/{name}.png") #saving image
+    self.img.save(f"output_images/{name}.png") #saving image
   
   ###################################################################
   #                       SHOW IMAGE
@@ -263,7 +264,7 @@ class TreeImage:
   def drawNode(self, value, crd):
     offset = self.cellSize[0]*1.4 / 2 #crd - offset  = center of circle on crd
     
-    font = ImageFont.truetype("Assets/Fonts/Lato-Regular.ttf", int(self.cellSize[0]*0.6)) #load font
+    font = ImageFont.truetype("assets/fonts/Lato-Regular.ttf", int(self.cellSize[0]*0.6)) #load font
     #draw circle
     self.imgDraw.ellipse(
       (
@@ -405,105 +406,3 @@ class TreeImage:
 #   and two possible children (also of class Node)
 #
 ###################################################################
-class Node:
-  
-  def __init__(self, value):
-    self.value = value      #value can be any object, list, dict or type
-    self.parent = None      #must be obect of class node
-    self.leftChild = None   #must be obect of class node
-    self.rightChild = None  #must be obect of class node
-
-  def __repr__(self):
-    return str(self.value)
-
-  def __str__(self):
-    return str(self.value)
-
-  ###################################################################
-  #                          PRINT TREE
-  #
-  #   Prints a shit string-representation of the tree.
-  #   Man it's terrible...
-  #
-  ###################################################################
-  def printTree(self):
-    print("-"*self.getDepth() + str(self))
-    if self.leftChild:
-      self.leftChild.printTree()
-    if self.rightChild:
-      self.rightChild.printTree()
-
-  ###################################################################
-  #                 SET LEFT CHILD
-  #
-  #   Sets the left child to the given Node-object-argument. 
-  #   Also sets that childs parent to self.
-  #
-  ###################################################################
-  def setLeftChild(self, node):
-    self.leftChild = node
-    self.leftChild.parent = self
-
-  ###################################################################
-  #                 SET RIGHT CHILD
-  #
-  #   Sets the right child to the given Node-object-argument. 
-  #   Also sets that childs parent to self.
-  #
-  ###################################################################
-  def setRightChild(self, node):
-    self.rightChild = node
-    self.rightChild.parent = self
-
-  ###################################################################
-  #                      GET DEPTH
-  #
-  #   Returns the number of edges from the root 
-  #   to the node that calls the method.
-  #
-  ###################################################################
-  def getDepth(self, c = 0):
-    if self.parent == None:
-      return c
-    return self.parent.getDepth(c + 1)
-  
-  ###################################################################
-  #                   GET HEIGHT
-  #
-  #   Returns the number of edges from the node 
-  #   to the deepest leaf.
-  #
-  ###################################################################
-  def getHeight(self, highest = 0):
-      l, r = 0, 0
-      if self.leftChild:
-        l = self.leftChild.getHeight(highest + 1)
-      if self.rightChild:
-        r = self.rightChild.getHeight(highest + 1)
-      if l == r == 0:
-        return highest
-      if l >= r:
-        return l
-      elif l < r:
-        return r
-
-if __name__ == "__main__":
-  node = Node(10)
-  node.setLeftChild(Node(2))
-  node.setRightChild(Node(5))
-  node.leftChild.setLeftChild(Node(6))
-  node.leftChild.setRightChild(Node(69))
-  node.leftChild.leftChild.setRightChild(Node(4))
-  node.leftChild.leftChild.setLeftChild(Node(7))
-  node.rightChild.setRightChild(Node(8))
-  #node.rightChild.rightChild.setRightChild(Node(23))
-  #node.rightChild.rightChild.rightChild.setRightChild(Node(89))
-  node.leftChild.leftChild.leftChild.setLeftChild(Node(29))
-  node.leftChild.leftChild.rightChild.setRightChild(Node(55))
-  node.leftChild.rightChild.setRightChild(Node(35))
-  node.leftChild.rightChild.rightChild.setRightChild(Node(15))
-  node.leftChild.leftChild.leftChild.setRightChild(Node(53))
-  node.leftChild.leftChild.rightChild.setLeftChild(Node(233))
-  
-  ti = TreeImage(node)
-  ti.show()
